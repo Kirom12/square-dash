@@ -1,3 +1,3 @@
 # square-dash
 
-projet technobel ta mere
+projet technobel
