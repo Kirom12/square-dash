@@ -47,8 +47,10 @@ var jump = {
 	timer : 0,
 	cooldown : 0,
 	holdTimer : 0,
-	particleEmit : false
+	current : false //@TODO : change name
 }
+
+var particles = {};
 
 //Game functions
 
@@ -139,15 +141,16 @@ function create() {
 	}
 
 	//Tuto particle : https://www.programmingmind.com/phaser/stop-particles-from-sliding-in-phaser
-	particle = game.add.emitter(player.x, player.y, 6);
-	particle.makeParticles('particle-white');
+	particles.die = game.add.emitter(player.x, player.y, 6);
+	particles.die.makeParticles('particle-white');
+	particles.die.width = 40;
+	particles.die.minParticleScale = 1;
+	particles.die.minParticleScale = 1.5;
 
-	//particle.forEach(function(particle) {  particle.tint = 0xff0000; });
-	particle.x = player.x;
-	particle.y = player.y;
-	particle.width = 40;
-	particle.minParticleScale = 1;
-	particle.minParticleScale = 1.5;
+	particles.jump = game.add.emitter(player.x, player.y, 3);
+	particles.jump.makeParticles('particle-white');
+	particles.jump.forEach(function(particle) {  particle.tint = 000015; });
+	particles.jump.width = 32;
 }
 
 /**
@@ -200,15 +203,28 @@ function update() {
 		}	
 	}
 
-	if (player.body.onFloor() && !jump.particleEmit) {
-		jump.particleEmit = true;
-		
+	if (player.body.onFloor()) {
+		//Rotation
+		player.angle = 0;
+
+		if (!jump.current) {
+			jump.current = true;
+
+			particles.jump.x = player.x;
+			particles.jump.y = player.y+player.height/2;
+			particles.jump.start(true, 200, null, 3);
+		}
+	} else {
+		player.angle += 10;
 	}
+
+
 
 	//If player is on flood and press a key
 	if (buttons.jump.isDown && player.body.onFloor() && game.time.now > jump.timer) {
 		jump.holdTimer = 1;
-		jump.particleEmit = false;
+		jump.current = false;
+
 		player.body.velocity.y = -jump.speed;
 		//player.body.gravity.y = 2000;
 		jump.timer = game.time.now + jump.cooldown;
@@ -250,9 +266,9 @@ function render() {
 function playerHit(player, world) {
 	if (debug.godMode) return;
 
-	particle.x = player.x;
-	particle.y = player.y+player.height/2;
-	particle.start(true, 200, null, 6);
+	particles.die.x = player.x;
+	particles.die.y = player.y+player.height/2;
+	particles.die.start(true, 200, null, 6);
 
 	player.kill();
 
@@ -260,8 +276,7 @@ function playerHit(player, world) {
 	//Shake camera
 	game.camera.shake(0.005, 500);
 
-	jump.particleEmit = false;
-
+	jump.current = false;
 
 	game.time.events.add(Phaser.Timer.SECOND * (playerData.respawnTime/60)/2, function() {
 		//Replace the camera at the begining
