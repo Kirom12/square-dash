@@ -19,7 +19,7 @@ var game = new Phaser.Game(gameInfo.initWidth, gameInfo.initHeight, Phaser.AUTO,
 	render: render
 });
 
-var map, layer, player;
+var map, layers, player;
 
 var jumpTimer = 0;
 
@@ -57,25 +57,26 @@ function create() {
 		main_collision : map.createLayer('collision-main')
 	}
 
-	layers.main.scale.set(gameInfo.scale);
-	layers.main_collision.scale.set(gameInfo.scale);
+	layers.main.scale.set(0.5);
+	layers.main_collision.scale.set(1);
+	map.setCollisionBetween(1, 2000, true, layers.main_collision);
+
 	layers.main.resizeWorld();
 
 	layers.main_collision.alpha = 0.5;
 	layers.main_collision.resizeWorld();
 	
-	map.setCollisionBetween(1, 20, true, layers.main_collision);
 	//map.setCollisionByExclusion([]);
 
 
-	game.scale.setGameSize(gameInfo.width, gameInfo.height);
+	// game.scale.setGameSize(gameInfo.width, gameInfo.height);
 
 
 	//Player
-	player = game.add.sprite(64, 64, 'player');
+	player = game.add.sprite(500, 500, 'player');
 	game.physics.enable(player, Phaser.Physics.ARCADE);
 
-	player.scale.set(gameInfo.scale);
+	player.scale.set(0.5);
 
     player.body.collideWorldBounds = true;
 	player.body.bounce.y = 0;
@@ -92,7 +93,7 @@ function create() {
  */
 function update() {
 
-	game.physics.arcade.collide(player, layers.main_collision);
+	game.physics.arcade.collide(player, layers.main_collision, hit);
 
 	player.body.velocity.x = 0;
 
@@ -109,6 +110,9 @@ function update() {
 	}
 }
 
+function hit(){
+	console.log("hit");
+}
 /**
  * Render function
  */
