@@ -3,27 +3,27 @@
  */
 
 //Global variables
-const gameInfo = {
+const gameData = {
 	div : 'game',
 	width : 1200,
 	height : 640,
-	initWidth : 3000,
-	initHeight : 3000,
+	initWidth : 2400,
+	initHeight : 1280,
 	scale : 0.5
 }
 
-const playerInfo = {
+const playerData = {
 	speed : 250,
 	jumpSpeed : 500,
 	startX : 10,
-	startY : gameInfo.height/2
+	startY : gameData.height/2
 }
 
 const debug = {
 	godMode : false
 }
 
-var game = new Phaser.Game(gameInfo.initWidth, gameInfo.initHeight, Phaser.AUTO, gameInfo.div, {
+var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO, gameData.div, {
 	preload: preload,
 	create: create,
 	update: update,
@@ -64,7 +64,7 @@ function create() {
 
 	map.addTilesetImage('tileset');
 	map.addTilesetImage('tileset-trap-new');
-
+	
 	layers = {
 		base : {
 			main : map.createLayer('main'),
@@ -81,29 +81,31 @@ function create() {
 		}
 	}
 
+
+	//@TODO : check https://phaser.io/examples/v2/tilemaps/resize-map (refactor?)
 	//Set scale on base layers
 	for (let i in layers.base) {
-		layers.base[i].setScale(gameInfo.scale);
+		layers.base[i].setScale(gameData.scale);
 		layers.base[i].resizeWorld();
 	}
 
 	//Set scale on collision layers
 	for (let i in layers.collision) {
 		map.setCollisionBetween(1, 200, true, layers.collision[i]);
-		layers.collision[i].setScale(gameInfo.scale);
+		layers.collision[i].setScale(gameData.scale);
 		layers.collision[i].alpha = 0;
 		layers.collision[i].resizeWorld();
 	}
 
 	//Set game size
-	game.scale.setGameSize(gameInfo.width, gameInfo.height);
+	game.scale.setGameSize(gameData.width, gameData.height);
 
 
 	//Player
-	player = game.add.sprite(playerInfo.startX, playerInfo.startY, 'player');
+	player = game.add.sprite(playerData.startX, playerData.startY, 'player');
 	game.physics.enable(player, Phaser.Physics.ARCADE);
 
-	player.scale.set(gameInfo.scale);
+	player.scale.set(gameData.scale);
 
     player.body.collideWorldBounds = true;
 	player.body.bounce.y = 0;
@@ -156,13 +158,13 @@ function update() {
 	player.body.velocity.x = 0;
 
 	if (cursors.left.isDown) {
-		player.body.velocity.x = -playerInfo.speed;
+		player.body.velocity.x = -playerData.speed;
 	} else if (cursors.right.isDown) {
-		player.body.velocity.x = playerInfo.speed;
+		player.body.velocity.x = playerData.speed;
 	}
 
 	if (buttons.jump.isDown && player.body.onFloor() && game.time.now > jumpTimer) {
-		player.body.velocity.y = -playerInfo.jumpSpeed;
+		player.body.velocity.y = -playerData.jumpSpeed;
 		jumpTimer = game.time.now + 750;
 	}
 
@@ -188,6 +190,18 @@ function render() {
 function playerHit(player, world) {
 	if (debug.godMode) return;
 	
-	player.x = playerInfo.startX;
-	player.y = playerInfo.startY;
+	player.x = playerData.startX;
+	player.y = playerData.startY;
 }
+
+
+/** 
+ * EXEMPLE
+ */
+
+// var layer = level.createLayer(layerData.name, layerData.width * levelData.tilewidth * 2,    layerData.height * levelData.tileheight * 2,    group);
+// layer.visible = layerData.visible;
+// layer.alpha = layerData.opacity;
+// layer.position.set(layerData.x, layerData.y);
+// layer.scale.set(0.5, 0.5);
+// layer.resizeWorld(); 
