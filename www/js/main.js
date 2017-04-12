@@ -34,12 +34,13 @@ var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO,
 });
 
 
-var map, layers, player, particle;
+var map, layers, player, particle, titleBg, playButton;
 var buttons = {};
 var currentColor = 0;
 var tick = {
 	currentGame : 0
 }
+var gameState = 0;
 
 var jump = {
 	speed : 400,
@@ -65,6 +66,10 @@ function preload() {
 	game.load.image('player', 'assets/img/player.png');
 	game.load.image('particle', 'assets/img/particles.png');
 	game.load.image('particle-white', 'assets/img/particle-white.png');
+
+	//Title screen
+	game.load.image('title-screen', 'assets/img/titlescreen.png');	
+	game.load.image('play-button', 'assets/img/bouton.png');
 }
 
 /**
@@ -73,6 +78,27 @@ function preload() {
 function create() {
 	//Start arcade physics engine
 	game.physics.startSystem(Phaser.Physics.ARCADE);
+
+	createButton();
+}
+
+function createButton() {
+	var _this = this;
+
+	console.log(this);
+
+	titleBg = game.add.sprite(0,0,'title-screen');
+	playButton = game.add.button(game.world.centerX,400,'play-button', function() {
+		createGame();
+		gameState = 1;
+		titleBg.kill();
+		playButton.kill();
+	}, this, 2, 1, 0);
+	playButton.anchor.set(0.5);
+	playButton.inputEnable = true;
+}
+
+function createGame() {
 
 	//Set game gravity
 	game.physics.arcade.gravity.y = 200; //@TODO : check gravity system...
@@ -131,7 +157,7 @@ function create() {
 
     game.camera.follow(player);
 
-	cursors = this.input.keyboard.createCursorKeys();
+	cursors = game.input.keyboard.createCursorKeys();
 
 	buttons = {
 		jump : game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
@@ -158,7 +184,19 @@ function create() {
  */
 function update() {
 
-	//console.log(gameTick);
+	switch(gameState) {
+		case 0:
+			break;
+		case 1:
+			play();
+			break;
+		default:
+	}
+
+	
+}
+
+function play() {
 
 	//Debug mode
 	if (debug.keyMode) {
@@ -260,6 +298,10 @@ function update() {
  */
 function render() {
 	//game.debug.cameraInfo(game.camera, 32, 32);
+}
+
+function buttonClick() {
+	console.log("click");
 }
 
 //Collision functions
