@@ -61,7 +61,7 @@ var particles = {};
 function preload() {
 	game.load.tilemap('map', 'assets/json/map-full-16.json', null, Phaser.Tilemap.TILED_JSON);
 	game.load.image('tileset', 'assets/img/tileset-16.png');
-	game.load.image('tileset-trap-new', 'assets/img/tileset-trap-16.png');
+	game.load.image('tileset-trap-new', 'assets/img/tileset-trap-new-16.png');
 	game.load.image('player', 'assets/img/player.png');
 	game.load.image('particle', 'assets/img/particles.png');
 	game.load.image('particle-white', 'assets/img/particle-white.png');
