@@ -1,5 +1,6 @@
 /**
  * Main javascript file
+ * Test : https://kirom12.github.io/square-dash/www/
  */
 
 //Global variables
@@ -227,6 +228,7 @@ function update() {
 
 	switch(gameState) {
 		case 0:
+			
 			break;
 		case 1:
 			play();
