@@ -15,7 +15,7 @@ const gameData = {
 
 const playerData = {
 	speed : 300,
-	startX : 20,
+	startX : 6200,
 	startY : gameData.height/2,
 	preStartTime : 60,
 	respawnTime : 60,
@@ -35,13 +35,18 @@ var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO,
 });
 
 
-var map, layers, player, particle, titleBg, playButton, timer, text, background;
+var map, layers, player, particle, titleBg, playButton, replayButton, timer, text, background;
 var buttons = {};
 var currentColor = 0;
 var tick = {
 	currentGame : 0
 }
 var gameState = 0;
+/*
+ * 0 : title screen
+ * 1 : play
+ * 2 : game over
+ */
 
 var jump = {
 	speed : 400,
@@ -59,6 +64,13 @@ var timerData = {
 	centSec : 0,
 	style : { font: "30px Arial", fill: "white", align: "center" },
 	text : null
+}
+
+var gameOverData = {
+	styleInfo : { font: "80px Arial", fill: "white", align: "center" },
+	styleScore : { font: "40px Arial", fill: "white", align: "center" },
+	infoText : null,
+	scoreText : null
 }
 
 var particles = {};
@@ -206,8 +218,8 @@ function createGame() {
 
 	//TIMER
 	timer = game.time.create(false);
-	text = game.add.text(gameData.width-100, 10, timerData.sec + " . " + timerData.centSec , timerData.style);
-	text.fixedToCamera = true;
+	timerData.text = game.add.text(gameData.width-100, 10, timerData.sec + " . " + timerData.centSec , timerData.style);
+	timerData.text.fixedToCamera = true;
 
 	timer.loop(timerData.update, function() {
 		timerData.centSec += 10;
@@ -215,7 +227,7 @@ function createGame() {
 			timerData.sec++;
 			timerData.centSec = 0;
 		}
-		text.setText(timerData.sec + " . " + timerData.centSec);
+		timerData.text.setText(timerData.sec + "." + timerData.centSec);
 	}, this);
 
 	timer.start();
@@ -225,6 +237,7 @@ function createGame() {
  * Update function
  */
 function update() {
+	console.log(gameState);
 
 	switch(gameState) {
 		case 0:
@@ -232,6 +245,9 @@ function update() {
 			break;
 		case 1:
 			play();
+			break;
+		case 2:
+
 			break;
 		default:
 	}
@@ -333,20 +349,47 @@ function play() {
 		currentColor = 2;
 	}
 
+	//Check if player reach the end
+	if (player.x > map.widthInPixels-50) {
+		gameState = 2;
+		gameOver();
+	}
+
 	//Update ticks
 	tick.currentGame++;
 }
 
+function gameOver() {
+	player.kill();
+
+	timer.stop();
+
+	gameOverData.infoText = game.add.text(map.widthInPixels-gameData.width/2, gameData.height/2-30, "YOU DID IT MOTHERFUCKER" , gameOverData.styleInfo);
+	gameOverData.infoText.anchor.set(0.5);
+
+	gameOverData.scoreText = game.add.text(map.widthInPixels-gameData.width/2, gameData.height/2+30, "Score : " + timerData.sec + "." + timerData.centSec + " secondes", gameOverData.styleScore);
+	gameOverData.scoreText.anchor.set(0.5);
+
+	replayButton = game.add.button(map.widthInPixels-gameData.width/2, gameData.height/2+100,'play-button', function() {
+		gameOverData.infoText.kill();
+		gameOverData.scoreText.kill();
+		replayButton.kill();
+
+		game.camera.follow();
+		player.kill();
+
+		playerReset();
+
+	}, this, 2, 1, 0);
+	replayButton.anchor.set(0.5);
+	replayButton.inputEnable = true;
+}
 
 /**
  * Render function
  */
 function render() {
-	//game.debug.cameraInfo(game.camera, 32, 32);
-}
-
-function buttonClick() {
-	console.log("click");
+	game.debug.cameraInfo(game.camera, 32, 32);
 }
 
 //Collision functions
@@ -357,11 +400,16 @@ function playerHit(player, world) {
 	particles.die.y = player.y+player.height/2;
 	particles.die.start(true, 200, null, 6);
 
+	game.camera.follow();
 	player.kill();
 
 	//Shake camera
 	game.camera.shake(0.005, 500);
 
+	playerReset();
+}
+
+function playerReset() {
 	jump.current = false;
 
 	game.time.events.add(Phaser.Timer.SECOND * (playerData.respawnTime/60)/2, function() {
@@ -372,15 +420,17 @@ function playerHit(player, world) {
 		//Small time and reset player
 		game.time.events.add(Phaser.Timer.SECOND * (playerData.respawnTime/60)/2, function() {
 			tick.currentGame = 0;
-			player.reset(playerData.startX, playerData.startY);
+			player.reset(20, playerData.startY);
 
+			game.camera.follow(player);
 			//Reset timer
 			timerData.sec = 0;
 			timerData.centSec = 0;
+
+			gameState = 1;
 		}, this);
 	}, this);
 }
-
 
 /** 
  * EXEMPLE
