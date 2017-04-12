@@ -26,7 +26,7 @@ const debug = {
 	keyMode : true
 }
 
-var game = new Phaser.Game(gameData.width, gameData.height, Phaser.AUTO, gameData.div, {
+var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO, gameData.div, {
 	preload: preload,
 	create: create,
 	update: update,
@@ -59,9 +59,9 @@ var particles = {};
  * Preload function
  */
 function preload() {
-	game.load.tilemap('map', 'assets/json/map-full.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('tileset', 'assets/img/tileset.png');
-	game.load.image('tileset-trap-new', 'assets/img/tileset-trap-new.png');
+	game.load.tilemap('map', 'assets/json/map-full-16.json', null, Phaser.Tilemap.TILED_JSON);
+	game.load.image('tileset', 'assets/img/tileset-16.png');
+	game.load.image('tileset-trap-new', 'assets/img/tileset-trap-16.png');
 	game.load.image('player', 'assets/img/player.png');
 	game.load.image('particle', 'assets/img/particles.png');
 	game.load.image('particle-white', 'assets/img/particle-white.png');
@@ -121,7 +121,7 @@ function create() {
 	player = game.add.sprite(playerData.startX, playerData.startY, 'player');
 	game.physics.enable(player, Phaser.Physics.ARCADE);
 
-	player.scale.set(gameData.scale);
+	player.scale.set(playerData.scale);
 	player.anchor.setTo(0.5);
 
     player.body.collideWorldBounds = true;
