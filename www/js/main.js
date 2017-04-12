@@ -7,9 +7,9 @@ const gameData = {
 	div : 'game',
 	width : 1200,
 	height : 640,
-	initWidth : 2400,
-	initHeight : 1280,
-	scale : 0.5
+	initWidth : 1200,
+	initHeight : 640,
+	scale : 1
 }
 
 const playerData = {
@@ -17,7 +17,8 @@ const playerData = {
 	startX : 20,
 	startY : gameData.height/2,
 	preStartTime : 60,
-	respawnTime : 60
+	respawnTime : 60,
+	scale : 0.5
 }
 
 const debug = {
@@ -25,7 +26,7 @@ const debug = {
 	keyMode : true
 }
 
-var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO, gameData.div, {
+var game = new Phaser.Game(gameData.width, gameData.height, Phaser.AUTO, gameData.div, {
 	preload: preload,
 	create: create,
 	update: update,
@@ -98,7 +99,6 @@ function create() {
 		}
 	}
 
-
 	//@TODO : check https://phaser.io/examples/v2/tilemaps/resize-map (refactor?)
 	//Set scale on base layers
 	for (let i in layers.base) {
@@ -115,7 +115,7 @@ function create() {
 	}
 
 	//Set game size
-	game.scale.setGameSize(gameData.width, gameData.height);
+	//game.scale.setGameSize(gameData.width, gameData.height);
 
 	//Player
 	player = game.add.sprite(playerData.startX, playerData.startY, 'player');
@@ -289,8 +289,6 @@ function playerHit(player, world) {
 			player.reset(playerData.startX, playerData.startY);
 		}, this);
 	}, this);
-
-
 }
 
 
@@ -298,9 +296,10 @@ function playerHit(player, world) {
  * EXEMPLE
  */
 
-// var layer = level.createLayer(layerData.name, layerData.width * levelData.tilewidth * 2,    layerData.height * levelData.tileheight * 2,    group);
+// Layer resize http://www.html5gamedevs.com/topic/8897-scaling-down-a-tilemap-layer
+// var layer = level.createLayer(layerData.name,layerData.width * levelData.tilewidth * 2,layerData.height * levelData.tileheight * 2,group);
 // layer.visible = layerData.visible;
 // layer.alpha = layerData.opacity;
 // layer.position.set(layerData.x, layerData.y);
 // layer.scale.set(0.5, 0.5);
-// layer.resizeWorld(); 
+// layer.resizeWorld();
