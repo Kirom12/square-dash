@@ -34,7 +34,7 @@ var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO,
 });
 
 
-var map, layers, player, particle, titleBg, playButton, timer, text;
+var map, layers, player, particle, titleBg, playButton, timer, text, background;
 var buttons = {};
 var currentColor = 0;
 var tick = {
@@ -78,6 +78,8 @@ function preload() {
 	//Title screen
 	game.load.image('title-screen', 'assets/img/titlescreen.png');	
 	game.load.image('play-button', 'assets/img/bouton.png');
+
+	game.load.image('background', 'assets/img/background.png');
 }
 
 /**
@@ -105,8 +107,26 @@ function createButton() {
 function createGame() {
 
 	//Set game gravity
-	game.physics.arcade.gravity.y = 200; //@TODO : check gravity system...
+	game.physics.arcade.gravity.y = 0; //@TODO : check gravity system...
 	game.stage.backgroundColor = '#000000';
+
+	//Set background
+	background = game.add.tileSprite(0, 40, gameData.width, gameData.height, 'background');
+    background.fixedToCamera = true;
+    background.alpha = 0.6;
+
+    //Set background particles
+    particles.background = game.add.emitter(0, 0, 500);
+	particles.background.makeParticles('particle-white');
+	particles.background.height = game.world.height*2;
+	particles.background.minParticleScale = 0.3;
+	particles.background.maxParticleScale = 0.7;
+	particles.background.setYSpeed(0, 0);
+	particles.background.setXSpeed(-500, -500);
+	particles.background.start(false, 2500, 20, 0);
+	particles.background.alpha = 0.3;
+	particles.background.gravity.y = 20;
+	particles.background.fixedToCamera = true;
 
 	map = game.add.tilemap('map');
 
@@ -218,6 +238,8 @@ function update() {
 }
 
 function play() {
+	//Set bg particles position (follow camera)
+	particles.background.emitX = game.camera.x + gameData.width;
 
 	//Debug mode
 	if (debug.keyMode) {
