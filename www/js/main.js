@@ -363,7 +363,7 @@ function play() {
 function gameOver() {
 	player.kill();
 
-	timer.stop();
+	timer.pause();
 
 	gameOverData.infoText = game.add.text(map.widthInPixels-gameData.width/2, gameData.height/2-30, "YOU DID IT MOTHERFUCKER" , gameOverData.styleInfo);
 	gameOverData.infoText.anchor.set(0.5);
@@ -380,7 +380,6 @@ function gameOver() {
 		player.kill();
 
 		playerReset();
-
 	}, this, 2, 1, 0);
 	replayButton.anchor.set(0.5);
 	replayButton.inputEnable = true;
@@ -403,6 +402,8 @@ function playerHit(player, world) {
 
 	game.camera.follow();
 	player.kill();
+
+	timer.pause();
 
 	//Shake camera
 	game.camera.shake(0.005, 500);
@@ -429,6 +430,8 @@ function playerReset() {
 			timerData.centSec = 0;
 
 			gameState = 1;
+
+			timer.resume();
 		}, this);
 	}, this);
 }
