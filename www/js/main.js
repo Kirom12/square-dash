@@ -186,6 +186,7 @@ function createGame() {
 	//TIMER
 	timer = game.time.create(false);
 	text = game.add.text(gameData.width-100, 10, timerData.sec + " . " + timerData.centSec , timerData.style);
+	text.fixedToCamera = true;
 
 	timer.loop(timerData.update, function() {
 		timerData.centSec += 10;
