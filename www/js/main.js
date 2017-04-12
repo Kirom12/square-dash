@@ -15,7 +15,7 @@ const gameData = {
 
 const playerData = {
 	speed : 300,
-	startX : 6200,
+	startX : 20,
 	startY : gameData.height/2,
 	preStartTime : 60,
 	respawnTime : 60,
@@ -90,7 +90,8 @@ function preload() {
 
 	//Title screen
 	game.load.image('title-screen', 'assets/img/titlescreen.png');	
-	game.load.image('play-button', 'assets/img/bouton.png');
+	game.load.image('play-button', 'assets/img/bouton-play.png');
+	game.load.image('replay-button', 'assets/img/bouton-replay.png');
 
 	game.load.image('background', 'assets/img/background.png');
 }
@@ -370,7 +371,7 @@ function gameOver() {
 	gameOverData.scoreText = game.add.text(map.widthInPixels-gameData.width/2, gameData.height/2+30, "Score : " + timerData.sec + "." + timerData.centSec + " secondes", gameOverData.styleScore);
 	gameOverData.scoreText.anchor.set(0.5);
 
-	replayButton = game.add.button(map.widthInPixels-gameData.width/2, gameData.height/2+100,'play-button', function() {
+	replayButton = game.add.button(map.widthInPixels-gameData.width/2, gameData.height/2+100,'replay-button', function() {
 		gameOverData.infoText.kill();
 		gameOverData.scoreText.kill();
 		replayButton.kill();
@@ -389,7 +390,7 @@ function gameOver() {
  * Render function
  */
 function render() {
-	game.debug.cameraInfo(game.camera, 32, 32);
+	//game.debug.cameraInfo(game.camera, 32, 32);
 }
 
 //Collision functions
@@ -420,7 +421,7 @@ function playerReset() {
 		//Small time and reset player
 		game.time.events.add(Phaser.Timer.SECOND * (playerData.respawnTime/60)/2, function() {
 			tick.currentGame = 0;
-			player.reset(20, playerData.startY);
+			player.reset(playerData.startX, playerData.startY);
 
 			game.camera.follow(player);
 			//Reset timer
