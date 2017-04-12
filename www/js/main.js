@@ -34,7 +34,7 @@ var game = new Phaser.Game(gameData.initWidth, gameData.initHeight, Phaser.AUTO,
 });
 
 
-var map, layers, player, particle, titleBg, playButton;
+var map, layers, player, particle, titleBg, playButton, timer, text;
 var buttons = {};
 var currentColor = 0;
 var tick = {
@@ -50,6 +50,14 @@ var jump = {
 	cooldown : 0,
 	holdTimer : 0,
 	current : false //@TODO : change name
+}
+
+var timerData = {
+	update : 100,
+	sec : 0,
+	centSec : 0,
+	style : { font: "30px Arial", fill: "white", align: "center" },
+	text : null
 }
 
 var particles = {};
@@ -83,10 +91,6 @@ function create() {
 }
 
 function createButton() {
-	var _this = this;
-
-	console.log(this);
-
 	titleBg = game.add.sprite(0,0,'title-screen');
 	playButton = game.add.button(game.world.centerX,400,'play-button', function() {
 		createGame();
@@ -166,6 +170,7 @@ function createGame() {
 		blue : game.input.keyboard.addKey(Phaser.Keyboard.E)
 	}
 
+	// PARTICLES
 	//Tuto particle : https://www.programmingmind.com/phaser/stop-particles-from-sliding-in-phaser
 	particles.die = game.add.emitter(player.x, player.y, 6);
 	particles.die.makeParticles('particle-white');
@@ -177,6 +182,21 @@ function createGame() {
 	particles.jump.makeParticles('particle-white');
 	particles.jump.forEach(function(particle) {  particle.tint = 000015; });
 	particles.jump.width = 32;
+
+	//TIMER
+	timer = game.time.create(false);
+	text = game.add.text(gameData.width-100, 10, timerData.sec + " . " + timerData.centSec , timerData.style);
+
+	timer.loop(timerData.update, function() {
+		timerData.centSec += 10;
+		if (timerData.centSec >= 100) {
+			timerData.sec++;
+			timerData.centSec = 0;
+		}
+		text.setText(timerData.sec + " . " + timerData.centSec);
+	}, this);
+
+	timer.start();
 }
 
 /**
@@ -314,7 +334,6 @@ function playerHit(player, world) {
 
 	player.kill();
 
-
 	//Shake camera
 	game.camera.shake(0.005, 500);
 
@@ -329,6 +348,10 @@ function playerHit(player, world) {
 		game.time.events.add(Phaser.Timer.SECOND * (playerData.respawnTime/60)/2, function() {
 			tick.currentGame = 0;
 			player.reset(playerData.startX, playerData.startY);
+
+			//Reset timer
+			timerData.sec = 0;
+			timerData.centSec = 0;
 		}, this);
 	}, this);
 }
